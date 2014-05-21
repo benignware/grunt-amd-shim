@@ -9,7 +9,7 @@ Purpose
 This grunt plugin provides a build task for making older libraries that do not include the define pattern compatible with amd loaders like requirejs by wrapping the code in an define call. 
 
 Also, most of the javascript libraries expose one or more global variables on the window-object. This can lead to version conflicts when the embedding document also requires those modules.
-The amdshim tasks controls this by saving and restoring previously set globals and exporting the reference loaded by amd. 
+The amdshim task controls this by saving and restoring previously set globals and exporting the reference loaded by amd. 
 
 To achieve this, the plugin provides the following options: 
 
