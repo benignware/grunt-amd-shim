@@ -66,7 +66,7 @@ grunt amdshim:mediaelement
 
 Notes
 -----
-Note that this method may not work with javascript libraries that do not only expose their private variables to global access but also directly work with the global references to these.
+Note that this method may not work with javascript libraries that do not only expose their private variables to global access but also directly work with those global references.
 
   
  
