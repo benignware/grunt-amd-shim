@@ -37,14 +37,19 @@ Example
 Configure an amdshim for mediaelement.js
 
 ```
+// install using cli
+npm install git://github.com/benignware/grunt-amdshim.git
+```
+
+```
 // Gruntfile.js
 module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     amdshim: {
       mediaelement: {
-        src: 'src/lib/mediaelement-hls/build/mediaelement-and-player.js', 
-        dest: 'tmp/lib/mediaelement-hls/build/mediaelement-and-player.js', 
+        src: 'src/lib/mediaelement/build/mediaelement-and-player.js', 
+        dest: 'build/lib/mediaelement/build/mediaelement-and-player.js', 
         options: {
           dep: {
             jquery: '$'
