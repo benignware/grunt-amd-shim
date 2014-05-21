@@ -2,12 +2,9 @@ module.exports = function(grunt) {
     
     grunt.registerMultiTask('amdshim', 'build an define wrapper around a js file', function() {
        
-       grunt.log.writeln(['amdshim: ' + this.files.length]);
         var options = this.options({
           // defaults
         });
-        grunt.log.writeln(['amdshim: ' + options.test]);
-        
         
         this.files.forEach(function(f) {
           var src = f.src.filter(function(filepath) {
@@ -60,7 +57,6 @@ module.exports = function(grunt) {
           
           output+= "return _____globals._private['" + options.exports + "'];\n";
           output+= "});";
-          grunt.log.writeln(['amdshim: ' + f.dest]);
           
           grunt.file.write(f.dest, output);
 
