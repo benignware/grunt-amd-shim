@@ -3,9 +3,8 @@ grunt-amdshim
 Build a define wrapper around javascript libraries to support anonymous amd loading. 
 
 
-Purpose
--------
-
+About
+-----
 This grunt plugin provides a build task for making older libraries that do not include the define pattern compatible with amd loaders like requirejs by wrapping the code in an define call. 
 
 Also, most of the javascript libraries expose one or more global variables on the window-object. This can lead to version conflicts when the embedding document also requires those modules.
