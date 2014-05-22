@@ -131,7 +131,7 @@ define('mediaelement', [
 ```
 require(['mediaelement'], function(mejs) {
   // init player
-  // ...
+  var player1 = new mejs.MediaElementPlayer('#player1');
 });
 ```
   
