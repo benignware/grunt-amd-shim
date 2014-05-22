@@ -83,7 +83,7 @@ module.exports = function(grunt) {
 ```
 
 Problem here is, that a flash-plugin will still communicate over a global object named 'mejs.MediaPluginBridge'.  
-The global bridge identifier is hardcoded in the flash source. So you may need to fork a recent version and provide a patch to make the bridge identifier configurable via flashvars. 
+The global bridge identifier is hardcoded in the flash source. So you may need to fork a recent version and provide a patch to make the bridge identifier configurable via flashvars. Note that there are no changes required to mediaelement.js. 
 
 To rename the global 'mejs'-object you can specify an object containing key/value-pairs as 'global'-option:
 ```
