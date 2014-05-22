@@ -111,7 +111,7 @@ module.exports = function(grunt) {
 }
 ```
 
-In order to make the plugin work, you will also need to set some default options. 
+In order to make the plugin work with our renamed global, you will also need to set some default options. 
 This is an example using requirejs: 
 ```
 define('mediaelement', [
