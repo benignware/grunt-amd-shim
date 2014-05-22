@@ -121,7 +121,7 @@ define('mediaelement', [
   
   // set defaults
   mejs.MediaElementDefaults.pluginVars = "bridge=my_mejs.MediaPluginBridge";
-  mejs.MediaElementDefaults.pluginPath = require.toUrl('lib/mediaelement-hls/build/');
+  mejs.MediaElementDefaults.pluginPath = require.toUrl('lib/mediaelement/build/');
   
   return mejs;
 });
