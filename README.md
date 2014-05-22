@@ -40,7 +40,6 @@ Options
 Examples
 --------
 
-
 ### jQuery
 Since jQuery already registers as amd-module, we only want to hide our imported version from the global scope:
 ```
@@ -49,7 +48,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     jquery: {
       src: 'src/lib/jquery/dist/jquery.min.js', 
-      dest: 'tmp/lib/jquery/dist/jquery.min.js', 
+      dest: 'build/lib/jquery/dist/jquery.min.js', 
       options: { 
         global: ['$', 'jQuery']
       }
@@ -111,7 +110,7 @@ module.exports = function(grunt) {
 }
 ```
 
-In order to make the plugin work with our renamed global, you will also need to set some default options. 
+In order to make mediaelement.swf work with our renamed global, you will also need to set some default options. 
 This is an example using requirejs: 
 ```
 define('mediaelement', [
