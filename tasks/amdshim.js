@@ -24,19 +24,39 @@ module.exports = function(grunt) {
           
           var output = "";
           
-          
-          var depValues = [];
-          for (var x in options.dep) {
-            depValues.push(options.dep[x]);
+          var globalObject = {};
+          var globalArray = [];
+          if (options.global instanceof Array) {
+            globalArray = options.global;
+            globalObject = {};
+            options.global.forEach(function(f) {
+              globalObject[f] = '';
+            });
+          } else if (typeof options.global == 'object') {
+            globalObject = options.global;
+            globalArray = Object.keys(globalObject);
           }
-          var depKeys = Object.keys(options.dep);
           
-          output+= "define(" + JSON.stringify(depKeys) + ", function(" + depValues.join(", ") + ") {\n\n";
+          // start closure
+          output+= "(function() {";
           
-          output+= "var _____globals = {};\n";
+          // start define
+
+          if (options.exports) {
+            
+            var depValues = [];
+            for (var x in options.dep) {
+              depValues.push(options.dep[x]);
+            }
+            var depKeys = Object.keys(options.dep) || [];
+            
+            output+= "define(" + JSON.stringify(depKeys) + ", function(" + depValues.join(", ") + ") {\n\n";
+          }
           
-          output+= "_____globals._public = {\n";
-          for (var i = 0, global; global = options.global[i]; i++ ) {
+          output+= "var globals = {};\n";
+          
+          output+= "globals['public'] = {\n";
+          for (var i = 0, global; global = globalArray[i]; i++ ) {
             output+= "\t" + global + ": window." + global + ", \n";
           }
           output+= "};\n";
@@ -44,19 +64,33 @@ module.exports = function(grunt) {
           output+= grunt.file.read(f.src) + "\n";
           
           
-          output+= "_____globals._private = {\n";
-          for (var i = 0, global; global = options.global[i]; i++ ) {
+          output+= "globals['private'] = {\n";
+          for (var i = 0, global; global = globalArray[i]; i++ ) {
             output+= "\t" + global + ": window." + global + ", \n";
           }
           output+= "};\n";
           
-          output+= "for (var x in _____globals._public) {\n";
-          output+= "\twindow[x] = _____globals._public[x];\n";
+          output+= "for (var x in globals['public']) {\n";
+          output+= "\twindow[x] = globals['public'][x];\n";
           output+= "}\n";
           
+          for (var x in globalObject) {
+            if (globalObject[x]) {
+              output+= "window['" + globalObject[x] + "'] = globals['private']['" + x + "'];\n";
+            }
+          }
           
-          output+= "return _____globals._private['" + options.exports + "'];\n";
-          output+= "});";
+          if (options.exports) {
+            // export module
+            output+= "\treturn globals['private']['" + options.exports + "'];\n";
+            
+            // end define
+            output+= "});";
+            
+          }
+          
+          // end closure
+          output+= "})();";
           
           grunt.file.write(f.dest, output);
 
