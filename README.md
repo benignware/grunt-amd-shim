@@ -29,7 +29,7 @@ Options
   </tr>
   <tr>
     <td>global</td>
-    <td>An array containing the names of the exposed globals</td>
+    <td>An array containing the names of the exposed globals or an object containing globals as keys and renamed globals as values</td>
   </tr>
   <tr>
     <td>exports</td>
