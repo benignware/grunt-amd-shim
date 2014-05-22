@@ -134,7 +134,7 @@ require(['mediaelement'], function(mejs) {
 });
 ```
   
-By the way, we still need to prefix the css... ;-)
+By the way, we still need to include and prefix the css... ;-)
 
 
 
