@@ -114,7 +114,8 @@ grunt.initConfig({
 
 In order to make mediaelement.swf work with our renamed global, you will also need to set some default options. 
 This is an example using requirejs: 
-```
+```js
+// main.js
 define('mediaelement', [
   'require', 
   'jquery', 
@@ -127,9 +128,7 @@ define('mediaelement', [
   
   return mejs;
 });
-```
 
-```
 require(['mediaelement'], function(mejs) {
   // init player
   var player1 = new mejs.MediaElementPlayer('#player1');
