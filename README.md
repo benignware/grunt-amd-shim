@@ -1,113 +1,115 @@
-grunt-amdshim
-=============
-Build a define wrapper around javascript libraries to support anonymous amd loading. 
+# grunt-amd-shim
 
+> Creates a define wrapper around javascript libraries to support anonymous amd loading
 
-About
------
-This grunt plugin provides a build task for making older libraries that do not include the define pattern compatible with amd loaders like requirejs by wrapping the code in an define call. 
+## About
+This grunt plugin provides a build task for making javascript libraries that do not include the define pattern compatible with amd loaders like requirejs by wrapping the code in an define call. 
 
 Also, most of the javascript libraries expose one or more global variables to the global window scope. This can lead to version conflicts when the embedding document also requires those modules.
-The amdshim task controls this by saving and restoring previously set globals and exporting the reference loaded by amd. 
+The amdshim task anonymizes the module by saving and restoring previously set globals and exporting the reference loaded by amd. 
 
-Install
--------
+
+## Getting Started
+This plugin requires Grunt `~0.4.5`
+
+If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install this plugin with this command:
+
+```shell
+npm install grunt-amd-shim --save-dev
 ```
-npm install git://github.com/benignware/grunt-amdshim.git
+
+Once the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:
+
+```js
+grunt.loadNpmTasks('grunt-amd-shim');
 ```
 
-Options
--------
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-  </tr>
-  <tr>
-    <td>dep</td>
-    <td>An object containing dependencies as name/value pairs</td>
-  </tr>
-  <tr>
-    <td>global</td>
-    <td>An array containing the names of the exposed globals or an object containing globals as keys and renamed globals as values</td>
-  </tr>
-  <tr>
-    <td>exports</td>
-    <td>The name of the variable that should be exported by the module definition</td>
-  </tr>
-</table>
+## The "amd_shim" task
 
-Examples
---------
+### Overview
+In your project's Gruntfile, add a section named `amd_shim` to the data object passed into `grunt.initConfig()`.
 
-### jQuery
-Since jQuery already registers as amd-module, we only want to hide our imported version from the global scope:
+```js
+grunt.initConfig({
+  amd_shim: {
+    options: {
+      // Task-specific options go here.
+    },
+    your_target: {
+      // Target-specific file lists and/or options go here.
+    },
+  },
+});
 ```
-// Gruntfile.js
-module.exports = function(grunt) {
-  grunt.initConfig({
+
+### Options
+
+#### options.exports
+Type: `String`
+Default value: `''`
+
+The global reference to be exported as module definition, for example `$`
+
+#### options.dependencies
+Type: `Object`
+Default value: `{}`
+
+An object containing amd-dependencies as keys and the variable names they should have in the definition body, for example `{jquery: $}`
+
+#### options.globals
+Type: `Array`
+Default value: `[]`
+
+An array containing global keys, for example `[$, jQuery]` Pass an object to expose references to global scope, i.e. {$: $} or {jQuery: myJQuery} 
+
+### Usage Examples
+
+#### jQuery
+JQuery already registers as amd-module, so we only want to hide our imported version from the global scope:
+
+```js
+grunt.initConfig({
+  amd_shim: {
     jquery: {
-      src: 'src/lib/jquery/dist/jquery.min.js', 
-      dest: 'build/lib/jquery/dist/jquery.min.js', 
-      options: { 
-        global: ['$', 'jQuery']
+      options: {
+        globals: ['$', 'jQuery'] 
+      },
+      files: {
+        'dest/jquery.js': ['test/fixtures/jquery.min.js'],
       }
     }
-  });
-}
-grunt.registerTask('default', ['amdshim:jquery']);
+  }
+});
 ```
 
-
-### MediaElement.js
+#### MediaElement.js
 To make MediaElement.js work as 3rd-party amd-module, generally we need to include jQuery as dependency, hide / preserve global objects 'mejs' and 'MediaElement' and export the private 'mejs'-reference.
-```
-// Gruntfile.js
-module.exports = function(grunt) {
-  grunt.initConfig({
-    amdshim: {
-      mediaelement: {
-        src: 'src/lib/mediaelement/build/mediaelement-and-player.js', 
-        dest: 'build/lib/mediaelement/build/mediaelement-and-player.js', 
-        options: {
-          dep: {
-            jquery: '$'
-          }, 
-          global: ['mejs', 'MediaElementPlayer'], 
-          exports: 'mejs'
-        }
-      }
-    }
-  });
-}
-```
 
 Problem here is, that a flash-plugin will still communicate over a global object named 'mejs.MediaPluginBridge'.  
 The global bridge identifier is hardcoded in the flash source. So you may need to fork a recent version and provide a patch to make the bridge identifier configurable via flashvars. Note that there are no changes required to mediaelement.js. 
 
 To rename the global 'mejs'-object you can specify an object containing key/value-pairs as 'global'-option:
-```
-// Gruntfile.js
-module.exports = function(grunt) {
-  grunt.initConfig({
-    amdshim: {
-      mediaelement: {
-        src: 'src/lib/mediaelement/build/mediaelement-and-player.js', 
-        dest: 'build/lib/mediaelement/build/mediaelement-and-player.js', 
-        options: {
-          dep: {
-            jquery: '$'
-          }, 
-          global: {
-            'mejs': 'my_mejs',
-            'MediaElementPlayer': ''
-          }, 
-          exports: 'mejs'
+
+```js
+grunt.initConfig({
+  amd_shim: {
+    mediaelement: {
+      options: {
+        exports: 'mejs', 
+        dependencies: {
+          jquery: '$'
+        }, 
+        globals: {
+          mejs: 'my_mejs', 
+          MediaElement: ''
         }
+      },
+      files: {
+        'dest/mediaelement.js': ['src/mediaelement-and-player.min.js']
       }
     }
-  });
-}
+  }
+});
 ```
 
 In order to make mediaelement.swf work with our renamed global, you will also need to set some default options. 
@@ -134,11 +136,8 @@ require(['mediaelement'], function(mejs) {
 });
 ```
   
-By the way, we still need to include and prefix the css... ;-)
+## Contributing
+In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
-
-
-
-Notes
------
-Note that this method may not work with javascript libraries that do not only expose their private variables to global access but also directly work with those global references.
+## Release History
+_(Nothing yet)_
