@@ -1,7 +1,7 @@
 {
   "name": "grunt-amd-shim",
   "description": "Creates a define wrapper around javascript libraries to support anonymous amd loading",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "homepage": "https://github.com/benignware/grunt-amd-shim",
   "author": {
     "name": "Rafael Nowrotek",

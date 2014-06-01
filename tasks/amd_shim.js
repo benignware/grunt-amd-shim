@@ -59,37 +59,64 @@ module.exports = function(grunt) {
       // start closure
       output+= "(function() {\n";
       
-      // start define
-
-      console.log("OPTS EXPO: ", options.exports);
-      
-      if (options.exports) {
-        
-        
-        
-        var depValues = [];
-        for (var x in options.dependencies) {
-          depValues.push(options.dependencies[x]);
-        }
-        var depKeys = Object.keys(options.dependencies) || [];
-        
-        output+= "define(" + JSON.stringify(depKeys) + ", function(" + depValues.join(", ") + ") {\n\n";
-      }
-      
+      // store globals
       output+= "var globals = {};\n";
-      
       output+= "globals['public'] = {\n";
       for (var i = 0, global; global = globalArray[i]; i++ ) {
-        output+= "\t" + global + ": window." + global + ", \n";
+        output+= "\t" + global + ": window['" + global + "'], \n";
       }
       output+= "};\n";
       
-      output+= grunt.file.read(f.src) + "\n";
       
+      
+      
+      if (options.exports) {
+        
+        // start define
+        
+        var depValues = [];
+        for (var x in options.dependencies) {
+          var depValue = options.dependencies[x];
+          if (depValue instanceof Array) {
+            depValue = depValue[0];
+          }
+          depValues.push(depValue);
+        }
+        
+        var depKeys = Object.keys(options.dependencies) || [];
+        
+        output+= "define(" + JSON.stringify(depKeys) + ", function(" + depValues.join(", ") + ") {\n\n"; 
+        
+        for (var x in options.dependencies) {
+          
+          var depValue = options.dependencies[x];
+          var depValueExports = null;
+          if (depValue instanceof Array) {
+            depValueExports = depValue;
+            var depValueOtherExports = depValue.slice(1);
+            depValue = depValue[0];
+            for (var i = 0, depValueExport; depValueExport = depValueOtherExports[i]; i++) {
+              output+= "var " + depValueExport + " = " + depValue + ";\n";
+            }
+          } else {
+            depValueExports = [depValue];
+          }
+          
+          if (depValueExports) {
+            for (var i = 0, depValueExport; depValueExport = depValueExports[i]; i++) {
+              if (!!~globalArray.indexOf(depValueExport)) {
+                output+="window['" + depValueExport + "'] = " + depValueExport + ";\n";
+              }
+            }
+          }
+        }
+      }
+      
+      output+= grunt.file.read(f.src) + "\n";
       
       output+= "globals['private'] = {\n";
       for (var i = 0, global; global = globalArray[i]; i++ ) {
-        output+= "\t" + global + ": window." + global + ", \n";
+        output+= "\t" + global + ": window['" + global + "'], \n";
       }
       output+= "};\n";
       
@@ -97,6 +124,8 @@ module.exports = function(grunt) {
       output+= "\twindow[x] = globals['public'][x];\n";
       output+= "}\n";
       
+      
+      // restore globals
       for (var x in globalObject) {
         if (globalObject[x]) {
           output+= "window['" + globalObject[x] + "'] = globals['private']['" + x + "'];\n";
@@ -106,10 +135,9 @@ module.exports = function(grunt) {
       if (options.exports) {
         // export module
         output+= "\treturn globals['private']['" + options.exports + "'];\n";
-        
+
         // end define
         output+= "});\n";
-        
       }
       
       // end closure
@@ -117,7 +145,6 @@ module.exports = function(grunt) {
       
       grunt.file.write(f.dest, output);
       
-
       // Print a success message.
       grunt.log.writeln('File "' + f.dest + '" created.');
       
