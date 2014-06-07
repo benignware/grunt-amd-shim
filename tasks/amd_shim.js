@@ -63,12 +63,13 @@ module.exports = function(grunt) {
       output+= "var globals = {};\n";
       output+= "globals['public'] = {\n";
       for (var i = 0, global; global = globalArray[i]; i++ ) {
-        output+= "\t" + global + ": window['" + global + "'], \n";
+        output+= "\t" + global + ": window['" + global + "']";
+        if (globalArray[i + 1]) {
+          output+= ", ";
+        }
+        output+= "\n";
       }
       output+= "};\n";
-      
-      
-      
       
       if (options.exports) {
         
@@ -116,7 +117,11 @@ module.exports = function(grunt) {
       
       output+= "globals['private'] = {\n";
       for (var i = 0, global; global = globalArray[i]; i++ ) {
-        output+= "\t" + global + ": window['" + global + "'], \n";
+        output+= "\t" + global + ": window['" + global + "']";
+        if (globalArray[i + 1]) {
+          output+= ", ";
+        }
+        output+= "\n";
       }
       output+= "};\n";
       
